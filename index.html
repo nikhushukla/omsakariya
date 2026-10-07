@@ -1,0 +1,449 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The Cricket Hub</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#f5f7f6;color:#12201b}
+header{background:#071b14;color:white;position:sticky;top:0;z-index:20;box-shadow:0 2px 15px #0003}
+.nav{max-width:1200px;margin:auto;padding:16px 18px;display:flex;align-items:center;justify-content:space-between;gap:15px}
+.logo{font-size:24px;font-weight:900}.logo span{color:#66d18b}
+nav button,.filter button{border:0;background:transparent;color:inherit;font-weight:700;cursor:pointer}
+.hero{max-width:1200px;margin:20px auto;padding:0 18px}
+.slider{height:310px;border-radius:22px;overflow:hidden;position:relative;background:#123}
+.slide{position:absolute;inset:0;opacity:0;transition:opacity .6s}
+.slide.active{opacity:1}.slide img{width:100%;height:100%;object-fit:cover;display:block;filter:brightness(.62)}
+.caption{position:absolute;left:28px;bottom:28px;color:#fff}.caption h1{font-size:38px;margin:0 0 8px}.caption p{margin:0;font-size:18px}
+.shop{max-width:1200px;margin:0 auto;padding:10px 18px 50px}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:12px 0 22px}
+input,select{padding:12px 14px;border:1px solid #ccd7d1;border-radius:12px;background:white;font-size:15px}
+.filters{display:flex;gap:8px;flex-wrap:wrap}.filter button{padding:10px 14px;border-radius:999px;background:white;color:#17352a;border:1px solid #ccd7d1}.filter button.on{background:#0b6b42;color:#fff;border-color:#0b6b42}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.card{background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 5px 20px #17352a12;border:1px solid #e4ebe7;display:flex;flex-direction:column}
+.pic{height:235px;background:#f7f8f7;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.pic img{width:100%;height:100%;object-fit:contain;padding:12px;transition:transform .35s;display:block}
+.card:hover .pic img{transform:scale(1.10)}.info{padding:14px}.brand{font-size:12px;text-transform:uppercase;color:#087444;font-weight:900;letter-spacing:.8px}
+h3{font-size:16px;line-height:1.3;margin:6px 0}.info p{font-size:12px;color:#718078;min-height:32px;margin:7px 0}
+.bottom{display:flex;justify-content:space-between;align-items:center;gap:8px}.bottom strong{font-size:18px}
+.bottom button{border:0;border-radius:10px;padding:10px 12px;background:#0b6b42;color:#fff;font-weight:800;cursor:pointer}
+.empty{padding:40px;text-align:center;grid-column:1/-1;background:#fff;border-radius:16px}
+footer{background:#071b14;color:#c9d8d1;text-align:center;padding:25px}
+.cart{position:fixed;right:15px;bottom:15px;background:#e9b949;color:#102018;border:0;border-radius:50px;padding:14px 20px;font-weight:900;z-index:30;box-shadow:0 8px 25px #0003}
+@media(max-width:900px){.grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:650px){.grid{grid-template-columns:repeat(2,1fr);gap:10px}.slider{height:230px}.caption h1{font-size:28px}.pic{height:185px}.info{padding:10px}.bottom{align-items:flex-start;flex-direction:column}.bottom button{width:100%}}
+
+
+/* Image hover/click stays inside the image box and never covers product text */
+.pic{position:relative;isolation:isolate}
+.pic img{transform-origin:center;will-change:transform}
+@media (hover:hover) and (pointer:fine){.pic:hover img,.pic:focus-within img{transform:scale(1.12)}}
+.pic:active img{transform:scale(1.06)}
+.slider .prev,.slider .next{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:44px;border:0;border-radius:50%;background:#071b14cc;color:#fff;font-size:32px;line-height:1;cursor:pointer;z-index:3}
+.slider .prev{left:14px}.slider .next{right:14px}
+.dots{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);display:flex;gap:7px;z-index:3}
+.dots button{width:9px;height:9px;border:0;border-radius:50%;padding:0;background:#ffffff88;cursor:pointer}
+.dots button.active{background:#fff}
+.location{max-width:1200px;margin:0 auto;padding:10px 18px 50px}
+.locationBox{background:#fff;border:1px solid #e4ebe7;border-radius:18px;overflow:hidden;box-shadow:0 5px 20px #17352a12}
+.locationHead{padding:22px 22px 16px}
+.locationHead h2{margin:0 0 6px}
+.locationHead p{margin:0;color:#718078}
+.mapWrap{height:420px;width:100%;background:#e9eeeb}
+.mapWrap iframe{width:100%;height:100%;border:0;display:block}
+.directions{display:inline-block;margin:16px 22px 22px;padding:11px 16px;border-radius:10px;background:#0b6b42;color:#fff;text-decoration:none;font-weight:800}
+@media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}.location{padding-bottom:35px}}
+@media(max-width:520px){.grid{grid-template-columns:1fr 1fr}.pic{height:175px}.slider .prev,.slider .next{width:38px;height:38px;font-size:27px}.mapWrap{height:320px}.caption{left:18px;bottom:30px}.caption p{font-size:14px}}
+@media(max-width:380px){.grid{grid-template-columns:1fr}.pic{height:220px}}
+</style></head>
+<body>
+<header><div class="nav"><div class="logo">🏏 The <span>Cricket Hub</span></div><nav><button onclick="document.getElementById('catalogue').scrollIntoView()">Shop</button></nav></div></header>
+<main>
+<section class="hero"><div class="slider" aria-label="Cricket Hub slider">
+<div class="slide active"><img src="https://www.cricketarabia.com/cdn/shop/files/SG_kit_8_1078x1078.jpg?v=1750332393" alt="Cricket kit and equipment"><div class="caption"><h1>Cricket Equipment</h1><p>Built for the crease</p></div></div>
+<div class="slide"><img src="https://images.unsplash.com/photo-1531415074968-036ba1b575da?w=1600" alt="Cricket bat and ball"><div class="caption"><h1>Match Ready</h1><p>Cricket gear for every innings</p></div></div>
+<div class="slide"><img src="https://images.unsplash.com/photo-1629285483764-34656f76030e?w=1600" alt="Cricket ball"><div class="caption"><h1>Cricket Essentials</h1><p>Balls, protection and training gear</p></div></div>
+<button class="prev" onclick="moveSlide(-1)" aria-label="Previous slide">‹</button>
+<button class="next" onclick="moveSlide(1)" aria-label="Next slide">›</button>
+<div class="dots" id="dots"></div>
+</div></section>
+<section class="shop" id="catalogue">
+<h2>Cricket Equipment Catalogue</h2>
+<div class="toolbar"><input id="search" placeholder="Search bats, balls, gloves..." oninput="render()"><div class="filters" id="filters"></div></div>
+<div class="grid" id="grid">
+<article class="card" data-brand="MRF" data-cat="Bat" data-name="mrf virat kohli edition english willow bat">
+      <div class="pic"><img loading="lazy" src="https://images.unsplash.com/photo-1531415074968-036ba1b575da?w=900" alt="MRF Virat Kohli Edition English Willow Bat" onerror="this.closest('.card').remove()"></div>
+      <div class="info"><span class="brand">MRF</span>
+      <h3>MRF Virat Kohli Edition English Willow Bat</h3><p>Brand New Edition • Professional Grade • Match Ready</p>
+      <div class="bottom"><strong>₹28,999</strong><button onclick="addToCart(1)">Add to Cart</button></div></div>
+    </article>
+<article class="card" data-brand="MRF" data-cat="Ball" data-name="mrf genius white cricket ball">
+      <div class="pic"><img loading="lazy" src="https://twenty2yards.com/cdn/shop/files/GENIUS_BALL_WHITE_png_1200x1200.webp?v=1757055075" alt="MRF Genius White Cricket Ball" onerror="this.closest('.card').remove()"></div>
+      <div class="info"><span class="brand">MRF</span>
+      <h3>MRF Genius White Cricket Ball</h3><p>Brand New Edition • Professional Grade • Match Ready</p>
+      <div class="bottom"><strong>₹1,299</strong><button onclick="addToCart(2)">Add to Cart</button></div></div>
+    </article>
+<article class="card" data-brand="MRF" data-cat="Pads" data-name="mrf wizard dynamite batting pads">
+      <div class="pic"><img loading="lazy" src="https://cricketwarehouse.com.au/cdn/shop/files/mrf-wizard-dynamite-batting-pads.jpg" alt="MRF Wizard Dynamite Batting Pads" onerror="this.closest('.card').remove()"></div>
+      <div class="info"><span class="brand">MRF</span>
+      <h3>MRF Wizard Dynamite Batting Pads</h3><p>Brand New Edition • Professional Grade • Match Ready</p>
+      <div class="bottom"><strong>₹8,999</strong><button onclick="addToCart(3)">Add to Cart</button></div></div>
+    </article>
+<article class="card" data-brand="MRF" data-cat="Gloves" data-name="mrf power 1.0 batting gloves">
+      <div class="pic"><img loading="lazy" src="https://cricketerpoint.com/cdn/shop/files/mrf-power-1-0-cricket-batting-gloves.jpg" alt="MRF Power 1.0 Batting Gloves" onerror="this.closest('.card').remove()"></div>
+      <div class="info"><span class="brand">MRF</span>
+      <h3>MRF Power 1.0 Batting Gloves</h3><p>Brand New Edition • Professional Grade • Match Ready</p>
+      <div class="bottom"><strong>₹4,999</strong><button onclick="addToCart(4)">Add to Cart</button></div></div>
+    </article>
+<article class="card" data-brand="MRF" data-cat="Helmet" data-name="mrf genius cricket helmet">
+      <div class="pic"><img loading="lazy" src="https://www.cricketshopitaly.com/cdn/shop/files/MrfGeniusCricketHelmet.jpg" alt="MRF Genius Cricket Helmet" onerror="this.closest('.card').remove()"></div>
+      <div class="info"><span class="brand">MRF</span>
+      <h3>MRF Genius Cricket Helmet</h3><p>Brand New Edition • Professional Grade • Match Ready</p>
+      <div class="bottom"><strong>₹5,499</strong><button onclick="addToCart(5)">Add to Cart</button></div></div>
+    </article>
+<article class="card" data-brand="MRF" data-cat="Kitbag" data-name="mrf vk18 le cricket kit bag">
+      <div class="pic"><img loading="lazy" src="https://mcgsports.com.au/cdn/shop/files/mrf-vk18-le-cricket-kit-bag.jpg" alt="MRF VK18 LE Cricket Kit Bag" onerror="this.closest('.card').remove()"></div>
+      <div class="info"><span class="brand">MRF</span>
+      <h3>MRF VK18 LE Cricket Kit Bag</h3><p>Brand New Edition • Professional Grade • Match Ready</p>
+      <div class="bottom"><strong>₹6,999</strong><button onclick="addToCart(6)">Add to Cart</button></div></div>
+    </article>
+<article class="card" data-brand="Gray-Nicolls" data-cat="Bat" data-name="gray-nicolls nova 3.0 1200 cricket bat">
+      <div class="pic"><img loading="lazy" src="https://highmarkcricket.com.au/cdn/shop/files/Nova3.01200Hero_1800x1800_d4683e79-7870-40d6-b449-3d30d43c74c3_1_533x.png?v=1752558290" alt="Gray-Nicolls Nova 3.0 1200 Cricket Bat" onerror="this.closest('.card').remove()"></div>
+      <div class="info"><span class="brand">Gray-Nicolls</span>
+      <h3>Gray-Nicolls Nova 3.0 1200 Cricket Bat</h3><p>Brand New Edition • Professional Grade • Match Ready</p>
+      <div class="bottom"><strong>₹45,999</strong><button onclick="addToCart(7)">Add to Cart</button></div></div>
+    </article>
+<article class="card" data-brand="Gray-Nicolls" data-cat="Ball" data-name="gray-nicolls crest elite cricket ball">
+      <div class="pic"><img loading="lazy" src="https://www.gray-nicolls.co.uk/cdn/shop/products/CDBK15BallCrestElite.jpg" alt="Gray-Nicolls Crest Elite Cricket Ball" onerror="this.closest('.card').remove()"></div>
+      <div class="info"><span class="brand">Gray-Nicolls</span>
+      <h3>Gray-Nicolls Crest Elite Cricket Ball</h3><p>Brand New Edition • Professional Grade • Match Ready</p>
+      <div class="bottom"><strong>₹1,999</strong><button onclick="addToCart(8)">Add to Cart</button></div></div>
+    </article>
+<article class="card" data-brand="Gray-Nicolls" data-cat="Pads" data-name="gray-nicolls ultimate cricket batting pads">
+      <div class="pic"><img loading="lazy" src="https://cricketcentre.com.au/cdn/shop/files/f58808ac-d776-4d21-bb39-379657486977_1800x1800.jpg?v=1751368500" alt="Gray-Nicolls Ultimate Cricket Batting Pads" onerror="this.closest('.card').remove()"></div>
+      <div class="info"><span class="brand">Gray-Nicolls</span>
+      <h3>Gray-Nicolls Ultimate Cricket Batting Pads</h3><p>Brand New Edition • Professional Grade • Match Ready</p>
+      <div class="bottom"><strong>₹11,999</strong><button onclick="addToCart(9)">Add to Cart</button></div></div>
+    </article>
+<article class="card" data-brand="Gray-Nicolls" data-cat="Gloves" data-name="gray-nicolls havoc 1.0 700 batting gloves">
+      <div class="pic"><img loading="lazy" src="https://www.martinberrillsports.com/cdn/shop/files/gray-nicolls-havoc-1-0-700-batting-gloves-2026.jpg" alt="Gray-Nicolls Havoc 1.0 700 Batting Gloves" onerror="this.closest('.card').remove()"></div>
+      <div class="info"><span class="brand">Gray-Nicolls</span>
+      <h3>Gray-Nicolls Havoc 1.0 700 Batting Gloves</h3><p>Brand New Edition • Professional Grade • Match Ready</p>
+      <div class="bottom"><strong>₹8,999</strong><button onclick="addToCart(10)">Add to Cart</button></div></div>
+    </article>
+<article class="card" data-brand="Gray-Nicolls" data-cat="Helmet" data-name="gray-nicolls ultimate 360 cricket helmet">
+      <div class="pic"><img loading="lazy" src="https://cricketcricketshop.com.au/cdn/shop/files/gray-nicolls-ultimate-360-cricket-batting-helmet-navy-senior.jpg" alt="Gray-Nicolls Ultimate 360 Cricket Helmet" onerror="this.closest('.card').remove()"></div>
+      <div class="info"><span class="brand">Gray-Nicolls</span>
+      <h3>Gray-Nicolls Ultimate 360 Cricket Helmet</h3><p>Brand New Edition • Professional Grade • Match Ready</p>
+      <div class="bottom"><strong>₹10,999</strong><button onclick="addToCart(11)">Add to Cart</button></div></div>
+    </article>
+<article class="card" data-brand="Gray-Nicolls" data-cat="Shoes" data-name="gray-nicolls revo pro 3.0 cricket shoes">
+      <div class="pic"><img loading="lazy" src="https://cdn11.bigcommerce.com/s-21x65e8kfn/images/stencil/original/products/88014/489381/GRY126_1000_7__66914.1773933464.jpg" alt="Gray-Nicolls Revo Pro 3.0 Cricket Shoes" onerror="this.closest('.card').remove()"></div>
+      <div class="info"><span class="brand">Gray-Nicolls</span>
+      <h3>Gray-Nicolls Revo Pro 3.0 Cricket Shoes</h3><p>Brand New Edition • Professional Grade • Match Ready</p>
+      <div class="bottom"><strong>₹9,999</strong><button onclick="addToCart(12)">Add to Cart</button></div></div>
+    </article>
+<article class="card" data-brand="SS Cricket" data-cat="Bat" data-name="ss master 99 english willow cricket bat">
+      <div class="pic"><img loading="lazy" src="https://yyccricket.com/cdn/shop/files/Master99-1.jpg?v=1777043736&amp;width=1200" alt="SS Master 99 English Willow Cricket Bat" onerror="this.closest('.card').remove()"></div>
+      <div class="info"><span class="brand">SS Cricket</span>
+      <h3>SS Master 99 English Willow Cricket Bat</h3><p>Brand New Edition • Professional Grade • Match Ready</p>
+      <div class="bottom"><strong>₹7,350</strong><button onclick="addToCart(13)">Add to Cart</button></div></div>
+    </article>
+<article class="card" data-brand="SS Cricket" data-cat="Ball" data-name="ss club ball cricket ball">
+      <div class="pic"><img loading="lazy" src="https://www.sstoncricket.com/cdn/shop/files/Club_Ball.jpg" alt="SS Club Ball Cricket Ball" onerror="this.closest('.card').remove()"></div>
+      <div class="info"><span class="brand">SS Cricket</span>
+      <h3>SS Club Ball Cricket Ball</h3><p>Brand New Edition • Professional Grade • Match Ready</p>
+      <div class="bottom"><strong>₹620</strong><button onclick="addToCart(14)">Add to Cart</button></div></div>
+    </article>
+<article class="card" data-brand="SS Cricket" data-cat="Pads" data-name="ss ton golden edition batting pads">
+      <div class="pic"><img loading="lazy" src="https://www.sstoncricket.com/cdn/shop/files/TON_Golden_Edition_Batting_Pad.jpg" alt="SS TON Golden Edition Batting Pads" onerror="this.closest('.card').remove()"></div>
+      <div class="info"><span class="brand">SS Cricket</span>
+      <h3>SS TON Golden Edition Batting Pads</h3><p>Brand New Edition • Professional Grade • Match Ready</p>
+      <div class="bottom"><strong>₹4,720</strong><button onclick="addToCart(15)">Add to Cart</button></div></div>
+    </article>
+<article class="card" data-brand="SS Cricket" data-cat="Gloves" data-name="ss super test new batting gloves">
+      <div class="pic"><img loading="lazy" src="https://cricketershop.com/cdn/shop/files/ss-batting-gloves-for-right-handed-batsman-adult-ss-super-test-white-cricket-batting-gloves-37989369675956.jpg?v=1745773162&amp;width=1080" alt="SS Super Test New Batting Gloves" onerror="this.closest('.card').remove()"></div>
+      <div class="info"><span class="brand">SS Cricket</span>
+      <h3>SS Super Test New Batting Gloves</h3><p>Brand New Edition • Professional Grade • Match Ready</p>
+      <div class="bottom"><strong>₹4,999</strong><button onclick="addToCart(16)">Add to Cart</button></div></div>
+    </article>
+<article class="card" data-brand="SS Cricket" data-cat="Helmet" data-name="ss pro premium cricket helmet">
+      <div class="pic"><img loading="lazy" src="https://blackashsports.com/cdn/shop/files/SS-Pro-Premium-Cricket-Helmet.jpg" alt="SS Pro Premium Cricket Helmet" onerror="this.closest('.card').remove()"></div>
+      <div class="info"><span class="brand">SS Cricket</span>
+      <h3>SS Pro Premium Cricket Helmet</h3><p>Brand New Edition • Professional Grade • Match Ready</p>
+      <div class="bottom"><strong>₹6,999</strong><button onclick="addToCart(17)">Add to Cart</button></div></div>
+    </article>
+<article class="card" data-brand="SS Cricket" data-cat="Shoes" data-name="ss master cricket shoes">
+      <div class="pic"><img loading="lazy" src="https://www.sstoncricket.com/cdn/shop/files/Master_Shoes.jpg" alt="SS Master Cricket Shoes" onerror="this.closest('.card').remove()"></div>
+      <div class="info"><span class="brand">SS Cricket</span>
+      <h3>SS Master Cricket Shoes</h3><p>Brand New Edition • Professional Grade • Match Ready</p>
+      <div class="bottom"><strong>₹1,900</strong><button onclick="addToCart(18)">Add to Cart</button></div></div>
+    </article>
+<article class="card" data-brand="SS Cricket" data-cat="Kitbag" data-name="ss devils wheelie duffle kitbag">
+      <div class="pic"><img loading="lazy" src="https://www.sstoncricket.com/cdn/shop/files/Devils_Wheelie_Duffle_Kitbag.jpg" alt="SS Devils Wheelie Duffle Kitbag" onerror="this.closest('.card').remove()"></div>
+      <div class="info"><span class="brand">SS Cricket</span>
+      <h3>SS Devils Wheelie Duffle Kitbag</h3><p>Brand New Edition • Professional Grade • Match Ready</p>
+      <div class="bottom"><strong>₹6,499</strong><button onclick="addToCart(19)">Add to Cart</button></div></div>
+    </article>
+<article class="card" data-brand="GM" data-cat="Bat" data-name="gm hypa original cricket bat">
+      <div class="pic"><img loading="lazy" src="https://www.provincesports.co.za/cdn/shop/products/Hypa-Bat_d51f8209-3545-475e-91c3-3bd65bb1be9f_1024x.png?v=1669207090" alt="GM Hypa Original Cricket Bat" onerror="this.closest('.card').remove()"></div>
+      <div class="info"><span class="brand">GM</span>
+      <h3>GM Hypa Original Cricket Bat</h3><p>Brand New Edition • Professional Grade • Match Ready</p>
+      <div class="bottom"><strong>₹39,999</strong><button onclick="addToCart(20)">Add to Cart</button></div></div>
+    </article>
+<article class="card" data-brand="GM" data-cat="Ball" data-name="gm diamond cricket ball">
+      <div class="pic"><img loading="lazy" src="https://images.unsplash.com/photo-1629285483764-34656f76030e?w=900" alt="GM Diamond Cricket Ball" onerror="this.closest('.card').remove()"></div>
+      <div class="info"><span class="brand">GM</span>
+      <h3>GM Diamond Cricket Ball</h3><p>Brand New Edition • Professional Grade • Match Ready</p>
+      <div class="bottom"><strong>₹1,199</strong><button onclick="addToCart(21)">Add to Cart</button></div></div>
+    </article>
+<article class="card" data-brand="GM" data-cat="Pads" data-name="gm diamond batting pads">
+      <div class="pic"><img loading="lazy" src="https://cricketdirect.co.uk/cdn/shop/files/Gunn-Moore-GM-Diamond-Batting-Pads.jpg" alt="GM Diamond Batting Pads" onerror="this.closest('.card').remove()"></div>
+      <div class="info"><span class="brand">GM</span>
+      <h3>GM Diamond Batting Pads</h3><p>Brand New Edition • Professional Grade • Match Ready</p>
+      <div class="bottom"><strong>₹9,999</strong><button onclick="addToCart(22)">Add to Cart</button></div></div>
+    </article>
+<article class="card" data-brand="GM" data-cat="Gloves" data-name="gm diamond batting gloves">
+      <div class="pic"><img loading="lazy" src="https://cricketdirect.co.uk/cdn/shop/files/Gunn-Moore-GM-Diamond-Cricket-Batting-Gloves.jpg" alt="GM Diamond Batting Gloves" onerror="this.closest('.card').remove()"></div>
+      <div class="info"><span class="brand">GM</span>
+      <h3>GM Diamond Batting Gloves</h3><p>Brand New Edition • Professional Grade • Match Ready</p>
+      <div class="bottom"><strong>₹7,999</strong><button onclick="addToCart(23)">Add to Cart</button></div></div>
+    </article>
+<article class="card" data-brand="GM" data-cat="Helmet" data-name="gm purist geo ii cricket helmet">
+      <div class="pic"><img loading="lazy" src="https://www.prodirectsport.com/cdn/shop/files/214607_main.jpg?v=1774354904" alt="GM Purist Geo II Cricket Helmet" onerror="this.closest('.card').remove()"></div>
+      <div class="info"><span class="brand">GM</span>
+      <h3>GM Purist Geo II Cricket Helmet</h3><p>Brand New Edition • Professional Grade • Match Ready</p>
+      <div class="bottom"><strong>₹8,999</strong><button onclick="addToCart(24)">Add to Cart</button></div></div>
+    </article>
+<article class="card" data-brand="GM" data-cat="Shoes" data-name="gm aion spike cricket shoes">
+      <div class="pic"><img loading="lazy" src="https://d2j6dbq0eux0bg.cloudfront.net/images/12175098/5347104201.jpg" alt="GM Aion Spike Cricket Shoes" onerror="this.closest('.card').remove()"></div>
+      <div class="info"><span class="brand">GM</span>
+      <h3>GM Aion Spike Cricket Shoes</h3><p>Brand New Edition • Professional Grade • Match Ready</p>
+      <div class="bottom"><strong>₹8,999</strong><button onclick="addToCart(25)">Add to Cart</button></div></div>
+    </article>
+<article class="card" data-brand="GM" data-cat="Kitbag" data-name="gm original duffle cricket kit bag">
+      <div class="pic"><img loading="lazy" src="https://www.allroundercricket.com/media/catalog/product/cache/16882fc9de905805ba934b71051d18ad/4/0/4081_aion_original_duffle_3.jpg" alt="GM Original Duffle Cricket Kit Bag" onerror="this.closest('.card').remove()"></div>
+      <div class="info"><span class="brand">GM</span>
+      <h3>GM Original Duffle Cricket Kit Bag</h3><p>Brand New Edition • Professional Grade • Match Ready</p>
+      <div class="bottom"><strong>₹7,999</strong><button onclick="addToCart(26)">Add to Cart</button></div></div>
+    </article>
+<article class="card" data-brand="SG Cricket" data-cat="Bat" data-name="sg thunder striker english willow bat">
+      <div class="pic"><img loading="lazy" src="https://shop.teamsg.in/cdn/shop/files/SG-Thunder-Striker-English-Willow-Cricket-Bat.jpg" alt="SG Thunder Striker English Willow Bat" onerror="this.closest('.card').remove()"></div>
+      <div class="info"><span class="brand">SG Cricket</span>
+      <h3>SG Thunder Striker English Willow Bat</h3><p>Brand New Edition • Professional Grade • Match Ready</p>
+      <div class="bottom"><strong>₹18,999</strong><button onclick="addToCart(27)">Add to Cart</button></div></div>
+    </article>
+<article class="card" data-brand="SG Cricket" data-cat="Ball" data-name="sg shield 30 white cricket leather ball">
+      <div class="pic"><img loading="lazy" src="https://shop.teamsg.in/cdn/shop/files/SG-Shield-30-White-Cricket-Leather-Ball.jpg" alt="SG Shield 30 White Cricket Leather Ball" onerror="this.closest('.card').remove()"></div>
+      <div class="info"><span class="brand">SG Cricket</span>
+      <h3>SG Shield 30 White Cricket Leather Ball</h3><p>Brand New Edition • Professional Grade • Match Ready</p>
+      <div class="bottom"><strong>₹899</strong><button onclick="addToCart(28)">Add to Cart</button></div></div>
+    </article>
+<article class="card" data-brand="SG Cricket" data-cat="Pads" data-name="sg test white batting legguard pads">
+      <div class="pic"><img loading="lazy" src="https://shop.teamsg.in/cdn/shop/files/SG-Test-White-Batting-Legguard.jpg" alt="SG Test White Batting Legguard Pads" onerror="this.closest('.card').remove()"></div>
+      <div class="info"><span class="brand">SG Cricket</span>
+      <h3>SG Test White Batting Legguard Pads</h3><p>Brand New Edition • Professional Grade • Match Ready</p>
+      <div class="bottom"><strong>₹5,999</strong><button onclick="addToCart(29)">Add to Cart</button></div></div>
+    </article>
+<article class="card" data-brand="SG Cricket" data-cat="Gloves" data-name="sg hp 33 batting gloves">
+      <div class="pic"><img loading="lazy" src="https://shop.teamsg.in/cdn/shop/files/SG-HP-33-Batting-gloves.jpg" alt="SG HP 33 Batting Gloves" onerror="this.closest('.card').remove()"></div>
+      <div class="info"><span class="brand">SG Cricket</span>
+      <h3>SG HP 33 Batting Gloves</h3><p>Brand New Edition • Professional Grade • Match Ready</p>
+      <div class="bottom"><strong>₹3,999</strong><button onclick="addToCart(30)">Add to Cart</button></div></div>
+    </article>
+<article class="card" data-brand="SG Cricket" data-cat="Helmet" data-name="sg pro shield cricket helmet">
+      <div class="pic"><img loading="lazy" src="https://shop.teamsg.in/cdn/shop/files/SG-Pro-Shield-Cricket-Helmet.jpg" alt="SG Pro Shield Cricket Helmet" onerror="this.closest('.card').remove()"></div>
+      <div class="info"><span class="brand">SG Cricket</span>
+      <h3>SG Pro Shield Cricket Helmet</h3><p>Brand New Edition • Professional Grade • Match Ready</p>
+      <div class="bottom"><strong>₹4,999</strong><button onclick="addToCart(31)">Add to Cart</button></div></div>
+    </article>
+<article class="card" data-brand="SG Cricket" data-cat="Shoes" data-name="sg ease cricket shoes">
+      <div class="pic"><img loading="lazy" src="https://shop.teamsg.in/cdn/shop/files/SG-EASE-Shoes-White-Orange.jpg" alt="SG EASE Cricket Shoes" onerror="this.closest('.card').remove()"></div>
+      <div class="info"><span class="brand">SG Cricket</span>
+      <h3>SG EASE Cricket Shoes</h3><p>Brand New Edition • Professional Grade • Match Ready</p>
+      <div class="bottom"><strong>₹3,999</strong><button onclick="addToCart(32)">Add to Cart</button></div></div>
+    </article>
+<article class="card" data-brand="SG Cricket" data-cat="Kitbag" data-name="sg thunder pro kit bag">
+      <div class="pic"><img loading="lazy" src="https://shop.teamsg.in/cdn/shop/files/SG-Thunder-Pro-Kit-Bag.jpg" alt="SG Thunder Pro Kit Bag" onerror="this.closest('.card').remove()"></div>
+      <div class="info"><span class="brand">SG Cricket</span>
+      <h3>SG Thunder Pro Kit Bag</h3><p>Brand New Edition • Professional Grade • Match Ready</p>
+      <div class="bottom"><strong>₹5,999</strong><button onclick="addToCart(33)">Add to Cart</button></div></div>
+    </article>
+<article class="card" data-brand="MRF" data-cat="Bat" data-name="mrf genius 360 english willow cricket bat">
+      <div class="pic"><img loading="lazy" src="https://scssports.in/cdn/shop/files/2_dfd0db40-6ea1-4e87-ac52-cc27f9bd34bb.png?v=1734439684&amp;width=1200" alt="MRF Genius 360 English Willow Cricket Bat" onerror="this.closest('.card').remove()"></div>
+      <div class="info"><span class="brand">MRF</span>
+      <h3>MRF Genius 360 English Willow Cricket Bat</h3><p>Brand New Edition • Professional Grade • Match Ready</p>
+      <div class="bottom"><strong>₹30,599</strong><button onclick="addToCart(34)">Add to Cart</button></div></div>
+    </article>
+<article class="card" data-brand="MRF" data-cat="Pads" data-name="mrf legend vk 18 1.0 batting pads">
+      <div class="pic"><img loading="lazy" src="https://kbsportshub.ie/cdn/shop/files/Untitled-1_d7a49d6d-7e0b-4d03-a107-6c00f6213033.png?v=1690928695&amp;width=1065" alt="MRF Legend VK 18 1.0 Batting Pads" onerror="this.closest('.card').remove()"></div>
+      <div class="info"><span class="brand">MRF</span>
+      <h3>MRF Legend VK 18 1.0 Batting Pads</h3><p>Brand New Edition • Professional Grade • Match Ready</p>
+      <div class="bottom"><strong>₹7,499</strong><button onclick="addToCart(35)">Add to Cart</button></div></div>
+    </article>
+<article class="card" data-brand="MRF" data-cat="Gloves" data-name="mrf genius emperor batting gloves">
+      <div class="pic"><img loading="lazy" src="https://milestonecricket.co.za/cdn/shop/files/MRF-GOLD-2-1.png?v=1766576483&amp;width=800" alt="MRF Genius Emperor Batting Gloves" onerror="this.closest('.card').remove()"></div>
+      <div class="info"><span class="brand">MRF</span>
+      <h3>MRF Genius Emperor Batting Gloves</h3><p>Brand New Edition • Professional Grade • Match Ready</p>
+      <div class="bottom"><strong>₹5,150</strong><button onclick="addToCart(36)">Add to Cart</button></div></div>
+    </article>
+<article class="card" data-brand="SS Cricket" data-cat="Bat" data-name="ss ton heritage english willow cricket bat">
+      <div class="pic"><img loading="lazy" src="https://www.shoppersbd.com/media/catalog/product/cache/1/image/9df78eab33525d08d6e5fb8d27136e95/s/s/ss-haritage-bat.jpg" alt="SS TON Heritage English Willow Cricket Bat" onerror="this.closest('.card').remove()"></div>
+      <div class="info"><span class="brand">SS Cricket</span>
+      <h3>SS TON Heritage English Willow Cricket Bat</h3><p>Brand New Edition • Professional Grade • Match Ready</p>
+      <div class="bottom"><strong>₹12,999</strong><button onclick="addToCart(37)">Add to Cart</button></div></div>
+    </article>
+<article class="card" data-brand="SS Cricket" data-cat="Pads" data-name="ss ranji lite batting pads">
+      <div class="pic"><img loading="lazy" src="https://www.xfitness.ae/cdn/shop/files/SS_CRICKET_BATTING_LEG_GUARD_RANJI_LITE_SAREEN_SPORTS.png?v=1748241275&amp;width=533" alt="SS Ranji Lite Batting Pads" onerror="this.closest('.card').remove()"></div>
+      <div class="info"><span class="brand">SS Cricket</span>
+      <h3>SS Ranji Lite Batting Pads</h3><p>Brand New Edition • Professional Grade • Match Ready</p>
+      <div class="bottom"><strong>₹3,999</strong><button onclick="addToCart(38)">Add to Cart</button></div></div>
+    </article>
+<article class="card" data-brand="SS Cricket" data-cat="Gloves" data-name="ss super test batting gloves">
+      <div class="pic"><img loading="lazy" src="https://static.joonsite.com/storage/72857/media/2507211557047913.jpg" alt="SS Super Test Batting Gloves" onerror="this.closest('.card').remove()"></div>
+      <div class="info"><span class="brand">SS Cricket</span>
+      <h3>SS Super Test Batting Gloves</h3><p>Brand New Edition • Professional Grade • Match Ready</p>
+      <div class="bottom"><strong>₹4,210</strong><button onclick="addToCart(39)">Add to Cart</button></div></div>
+    </article>
+<article class="card" data-brand="SS Cricket" data-cat="Kitbag" data-name="ss ranger cricket kit bag">
+      <div class="pic"><img loading="lazy" src="https://prokicksports.com/cdn/shop/files/SSRangerKitBag2.jpg?v=1689163508&amp;width=1946" alt="SS Ranger Cricket Kit Bag" onerror="this.closest('.card').remove()"></div>
+      <div class="info"><span class="brand">SS Cricket</span>
+      <h3>SS Ranger Cricket Kit Bag</h3><p>Brand New Edition • Professional Grade • Match Ready</p>
+      <div class="bottom"><strong>₹2,999</strong><button onclick="addToCart(40)">Add to Cart</button></div></div>
+    </article>
+<article class="card" data-brand="SG Cricket" data-cat="Bat" data-name="sg scorer plus kashmir willow cricket bat">
+      <div class="pic"><img loading="lazy" src="https://www.sportswing.in/cdn/shop/files/SGPremiumKashmirWillowCricketComboKit_8_cfc7fbcc-0873-49e5-b20a-66247579f9a9.jpg?v=1774591473&amp;width=1090" alt="SG Scorer Plus Kashmir Willow Cricket Bat" onerror="this.closest('.card').remove()"></div>
+      <div class="info"><span class="brand">SG Cricket</span>
+      <h3>SG Scorer Plus Kashmir Willow Cricket Bat</h3><p>Brand New Edition • Professional Grade • Match Ready</p>
+      <div class="bottom"><strong>₹4,999</strong><button onclick="addToCart(41)">Add to Cart</button></div></div>
+    </article>
+<article class="card" data-brand="SG Cricket" data-cat="Pads" data-name="sg test batting legguards">
+      <div class="pic"><img loading="lazy" src="https://www.lrsports.in/cdn/shop/files/Untitled_design_453123c4-2b4e-44a5-b679-e58fc4c44f38.png?v=1771410474" alt="SG Test Batting Legguards" onerror="this.closest('.card').remove()"></div>
+      <div class="info"><span class="brand">SG Cricket</span>
+      <h3>SG Test Batting Legguards</h3><p>Brand New Edition • Professional Grade • Match Ready</p>
+      <div class="bottom"><strong>₹4,999</strong><button onclick="addToCart(42)">Add to Cart</button></div></div>
+    </article>
+<article class="card" data-brand="SG Cricket" data-cat="Gloves" data-name="sg test batting gloves">
+      <div class="pic"><img loading="lazy" src="https://skiyasports.com/cdn/shop/files/Untitled_design_c896cfe9-442e-47c6-a90c-6031bb0d6f33.png?v=1752154890" alt="SG Test Batting Gloves" onerror="this.closest('.card').remove()"></div>
+      <div class="info"><span class="brand">SG Cricket</span>
+      <h3>SG Test Batting Gloves</h3><p>Brand New Edition • Professional Grade • Match Ready</p>
+      <div class="bottom"><strong>₹3,999</strong><button onclick="addToCart(43)">Add to Cart</button></div></div>
+    </article>
+<article class="card" data-brand="SG Cricket" data-cat="Helmet" data-name="sg smart cricket helmet">
+      <div class="pic"><img loading="lazy" src="https://prokicksports.com/cdn/shop/files/Smart3.jpg?v=1719898116&amp;width=1946" alt="SG Smart Cricket Helmet" onerror="this.closest('.card').remove()"></div>
+      <div class="info"><span class="brand">SG Cricket</span>
+      <h3>SG Smart Cricket Helmet</h3><p>Brand New Edition • Professional Grade • Match Ready</p>
+      <div class="bottom"><strong>₹3,999</strong><button onclick="addToCart(44)">Add to Cart</button></div></div>
+    </article>
+<article class="card" data-brand="SG Cricket" data-cat="Kitbag" data-name="sg ace duffle cricket kit bag">
+      <div class="pic"><img loading="lazy" src="https://shop.teamsg.in/cdn/shop/products/15_4-copy-2-scaled.jpg?v=1696575028" alt="SG ACE DUFFLE Cricket Kit Bag" onerror="this.closest('.card').remove()"></div>
+      <div class="info"><span class="brand">SG Cricket</span>
+      <h3>SG ACE DUFFLE Cricket Kit Bag</h3><p>Brand New Edition • Professional Grade • Match Ready</p>
+      <div class="bottom"><strong>₹3,499</strong><button onclick="addToCart(45)">Add to Cart</button></div></div>
+    </article>
+<article class="card" data-brand="GM" data-cat="Bat" data-name="gm diamond striker kashmir willow cricket bat">
+      <div class="pic"><img loading="lazy" src="https://www.silkrute.com.au/images/detailed/4293/71xR-zRUigL_xh9i-z1.jpg" alt="GM Diamond Striker Kashmir Willow Cricket Bat" onerror="this.closest('.card').remove()"></div>
+      <div class="info"><span class="brand">GM</span>
+      <h3>GM Diamond Striker Kashmir Willow Cricket Bat</h3><p>Brand New Edition • Professional Grade • Match Ready</p>
+      <div class="bottom"><strong>₹7,999</strong><button onclick="addToCart(46)">Add to Cart</button></div></div>
+    </article>
+<article class="card" data-brand="GM" data-cat="Gloves" data-name="gm prima 606 cricket batting gloves">
+      <div class="pic"><img loading="lazy" src="https://cricketershop.com/cdn/shop/files/gm-batting-gloves-right-handed-batsman-adult-gunn-moore-gm-prima-606-cricket-batting-gloves-mens-size-39041564442804.jpg?v=1745776424" alt="GM Prima 606 Cricket Batting Gloves" onerror="this.closest('.card').remove()"></div>
+      <div class="info"><span class="brand">GM</span>
+      <h3>GM Prima 606 Cricket Batting Gloves</h3><p>Brand New Edition • Professional Grade • Match Ready</p>
+      <div class="bottom"><strong>₹5,999</strong><button onclick="addToCart(47)">Add to Cart</button></div></div>
+    </article>
+<article class="card" data-brand="GM" data-cat="Pads" data-name="gm prima ambidextrous cricket pads">
+      <div class="pic"><img loading="lazy" src="https://www.cricket-hockey.com/52239/gm-prima-ambidextrous-cricket-pads-2023.jpg" alt="GM Prima Ambidextrous Cricket Pads" onerror="this.closest('.card').remove()"></div>
+      <div class="info"><span class="brand">GM</span>
+      <h3>GM Prima Ambidextrous Cricket Pads</h3><p>Brand New Edition • Professional Grade • Match Ready</p>
+      <div class="bottom"><strong>₹7,999</strong><button onclick="addToCart(48)">Add to Cart</button></div></div>
+    </article>
+<article class="card" data-brand="GM" data-cat="Helmet" data-name="gm maestro ti cricket helmet">
+      <div class="pic"><img loading="lazy" src="https://cricketerpoint.com/cdn/shop/files/2000x2000_Maestro_blue_SIDE_700x_f40641e7-97d7-4b1a-9b82-6ed78db6a8d3.webp?v=1762943315&amp;width=1024" alt="GM Maestro Ti Cricket Helmet" onerror="this.closest('.card').remove()"></div>
+      <div class="info"><span class="brand">GM</span>
+      <h3>GM Maestro Ti Cricket Helmet</h3><p>Brand New Edition • Professional Grade • Match Ready</p>
+      <div class="bottom"><strong>₹9,999</strong><button onclick="addToCart(49)">Add to Cart</button></div></div>
+    </article>
+<article class="card" data-brand="GM" data-cat="Shoes" data-name="gm original spike cricket shoes">
+      <div class="pic"><img loading="lazy" src="https://www.stagsports.com.au/cdn/shop/files/5_4c54dc43-8722-47d2-804e-8daa7b97a160.jpg?crop=center&amp;height=1000&amp;v=1719982469&amp;width=1000" alt="GM Original Spike Cricket Shoes" onerror="this.closest('.card').remove()"></div>
+      <div class="info"><span class="brand">GM</span>
+      <h3>GM Original Spike Cricket Shoes</h3><p>Brand New Edition • Professional Grade • Match Ready</p>
+      <div class="bottom"><strong>₹8,999</strong><button onclick="addToCart(50)">Add to Cart</button></div></div>
+    </article>
+<article class="card" data-brand="Gray-Nicolls" data-cat="Pads" data-name="gray-nicolls classic players edition batting pads">
+      <div class="pic"><img loading="lazy" src="https://www.gray-nicolls.co.uk/cdn/shop/files/CLAA25Legguards_20Classic_20Players_20Batting_20Pad_20Pair.jpg?v=1727177856" alt="Gray-Nicolls Classic Players Edition Batting Pads" onerror="this.closest('.card').remove()"></div>
+      <div class="info"><span class="brand">Gray-Nicolls</span>
+      <h3>Gray-Nicolls Classic Players Edition Batting Pads</h3><p>Brand New Edition • Professional Grade • Match Ready</p>
+      <div class="bottom"><strong>₹18,999</strong><button onclick="addToCart(51)">Add to Cart</button></div></div>
+    </article>
+<article class="card" data-brand="Gray-Nicolls" data-cat="Gloves" data-name="gray-nicolls 1200 batting gloves">
+      <div class="pic"><img loading="lazy" src="https://sjsports.com.au/cdn/shop/files/30059.jpg?v=1756814899" alt="Gray-Nicolls 1200 Batting Gloves" onerror="this.closest('.card').remove()"></div>
+      <div class="info"><span class="brand">Gray-Nicolls</span>
+      <h3>Gray-Nicolls 1200 Batting Gloves</h3><p>Brand New Edition • Professional Grade • Match Ready</p>
+      <div class="bottom"><strong>₹9,999</strong><button onclick="addToCart(52)">Add to Cart</button></div></div>
+    </article>
+<article class="card" data-brand="Gray-Nicolls" data-cat="Helmet" data-name="gray-nicolls evo pro cricket helmet">
+      <div class="pic"><img loading="lazy" src="https://cricketdirect.co.uk/cdn/shop/files/5509605EvoProHelmetNavy_FrontRight_grande.jpg?v=1736956996" alt="Gray-Nicolls Evo Pro Cricket Helmet" onerror="this.closest('.card').remove()"></div>
+      <div class="info"><span class="brand">Gray-Nicolls</span>
+      <h3>Gray-Nicolls Evo Pro Cricket Helmet</h3><p>Brand New Edition • Professional Grade • Match Ready</p>
+      <div class="bottom"><strong>₹10,999</strong><button onclick="addToCart(53)">Add to Cart</button></div></div>
+    </article>
+<article class="card" data-brand="Gray-Nicolls" data-cat="Ball" data-name="gray-nicolls grade a cricket ball">
+      <div class="pic"><img loading="lazy" src="https://batbroscricket.co.uk/cdn/shop/files/gray-nicolls-crest-elite-cricket-ball-front.webp?v=1773066392&amp;width=533" alt="Gray-Nicolls Grade A Cricket Ball" onerror="this.closest('.card').remove()"></div>
+      <div class="info"><span class="brand">Gray-Nicolls</span>
+      <h3>Gray-Nicolls Grade A Cricket Ball</h3><p>Brand New Edition • Professional Grade • Match Ready</p>
+      <div class="bottom"><strong>₹1,899</strong><button onclick="addToCart(54)">Add to Cart</button></div></div>
+    </article>
+<article class="card" data-brand="Gray-Nicolls" data-cat="Kitbag" data-name="gray-nicolls gn9 international cricket kit bag">
+      <div class="pic"><img loading="lazy" src="https://wizsports.com.au/cdn/shop/files/gray-nicolls-duffle-gn9-international-cricket-kit-bag-wheelie-cricket-kit-bag-980844_1200x1200.jpg?v=1750636793" alt="Gray-Nicolls GN9 International Cricket Kit Bag" onerror="this.closest('.card').remove()"></div>
+      <div class="info"><span class="brand">Gray-Nicolls</span>
+      <h3>Gray-Nicolls GN9 International Cricket Kit Bag</h3><p>Brand New Edition • Professional Grade • Match Ready</p>
+      <div class="bottom"><strong>₹8,999</strong><button onclick="addToCart(55)">Add to Cart</button></div></div>
+    </article>
+</div>
+</section></main>
+<section class="location" id="location">
+  <div class="locationBox">
+    <div class="locationHead">
+      <h2>Store Location</h2>
+      <p>The Cricket Hub • Jamnagar, Gujarat, India</p>
+    </div>
+    <div class="mapWrap">
+      <iframe title="The Cricket Hub - Jamnagar, Gujarat, India map" loading="lazy" src="https://www.openstreetmap.org/export/embed.html?bbox=70.0000%2C22.4000%2C70.1200%2C22.5300&layer=mapnik&marker=22.4707%2C70.0577"></iframe>
+    </div>
+    <a class="directions" href="https://www.google.com/maps/search/?api=1&query=Jamnagar%2C%20Gujarat%2C%20India" target="_blank" rel="noopener">Get Directions</a>
+  </div>
+</section>
+<button class="cart" onclick="alert('Cart items: '+cart)">🛒 Cart (<span id="count">0</span>)</button>
+<footer>© 2026 The Cricket Hub</footer>
+<script>
+const products=[{"name": "MRF Virat Kohli Edition English Willow Bat", "brand": "MRF", "cat": "Bat", "price": "₹28,999", "img": "https://images.unsplash.com/photo-1531415074968-036ba1b575da?w=900"}, {"name": "MRF Genius White Cricket Ball", "brand": "MRF", "cat": "Ball", "price": "₹1,299", "img": "https://twenty2yards.com/cdn/shop/files/GENIUS_BALL_WHITE_png_1200x1200.webp?v=1757055075"}, {"name": "MRF Wizard Dynamite Batting Pads", "brand": "MRF", "cat": "Pads", "price": "₹8,999", "img": "https://cricketwarehouse.com.au/cdn/shop/files/mrf-wizard-dynamite-batting-pads.jpg"}, {"name": "MRF Power 1.0 Batting Gloves", "brand": "MRF", "cat": "Gloves", "price": "₹4,999", "img": "https://cricketerpoint.com/cdn/shop/files/mrf-power-1-0-cricket-batting-gloves.jpg"}, {"name": "MRF Genius Cricket Helmet", "brand": "MRF", "cat": "Helmet", "price": "₹5,499", "img": "https://www.cricketshopitaly.com/cdn/shop/files/MrfGeniusCricketHelmet.jpg"}, {"name": "MRF VK18 LE Cricket Kit Bag", "brand": "MRF", "cat": "Kitbag", "price": "₹6,999", "img": "https://mcgsports.com.au/cdn/shop/files/mrf-vk18-le-cricket-kit-bag.jpg"}, {"name": "Gray-Nicolls Nova 3.0 1200 Cricket Bat", "brand": "Gray-Nicolls", "cat": "Bat", "price": "₹45,999", "img": "https://highmarkcricket.com.au/cdn/shop/files/Nova3.01200Hero_1800x1800_d4683e79-7870-40d6-b449-3d30d43c74c3_1_533x.png?v=1752558290"}, {"name": "Gray-Nicolls Crest Elite Cricket Ball", "brand": "Gray-Nicolls", "cat": "Ball", "price": "₹1,999", "img": "https://www.gray-nicolls.co.uk/cdn/shop/products/CDBK15BallCrestElite.jpg"}, {"name": "Gray-Nicolls Ultimate Cricket Batting Pads", "brand": "Gray-Nicolls", "cat": "Pads", "price": "₹11,999", "img": "https://cricketcentre.com.au/cdn/shop/files/f58808ac-d776-4d21-bb39-379657486977_1800x1800.jpg?v=1751368500"}, {"name": "Gray-Nicolls Havoc 1.0 700 Batting Gloves", "brand": "Gray-Nicolls", "cat": "Gloves", "price": "₹8,999", "img": "https://www.martinberrillsports.com/cdn/shop/files/gray-nicolls-havoc-1-0-700-batting-gloves-2026.jpg"}, {"name": "Gray-Nicolls Ultimate 360 Cricket Helmet", "brand": "Gray-Nicolls", "cat": "Helmet", "price": "₹10,999", "img": "https://cricketcricketshop.com.au/cdn/shop/files/gray-nicolls-ultimate-360-cricket-batting-helmet-navy-senior.jpg"}, {"name": "Gray-Nicolls Revo Pro 3.0 Cricket Shoes", "brand": "Gray-Nicolls", "cat": "Shoes", "price": "₹9,999", "img": "https://cdn11.bigcommerce.com/s-21x65e8kfn/images/stencil/original/products/88014/489381/GRY126_1000_7__66914.1773933464.jpg"}, {"name": "SS Master 99 English Willow Cricket Bat", "brand": "SS Cricket", "cat": "Bat", "price": "₹7,350", "img": "https://yyccricket.com/cdn/shop/files/Master99-1.jpg?v=1777043736&width=1200"}, {"name": "SS Club Ball Cricket Ball", "brand": "SS Cricket", "cat": "Ball", "price": "₹620", "img": "https://www.sstoncricket.com/cdn/shop/files/Club_Ball.jpg"}, {"name": "SS TON Golden Edition Batting Pads", "brand": "SS Cricket", "cat": "Pads", "price": "₹4,720", "img": "https://www.sstoncricket.com/cdn/shop/files/TON_Golden_Edition_Batting_Pad.jpg"}, {"name": "SS Super Test New Batting Gloves", "brand": "SS Cricket", "cat": "Gloves", "price": "₹4,999", "img": "https://cricketershop.com/cdn/shop/files/ss-batting-gloves-for-right-handed-batsman-adult-ss-super-test-white-cricket-batting-gloves-37989369675956.jpg?v=1745773162&width=1080"}, {"name": "SS Pro Premium Cricket Helmet", "brand": "SS Cricket", "cat": "Helmet", "price": "₹6,999", "img": "https://blackashsports.com/cdn/shop/files/SS-Pro-Premium-Cricket-Helmet.jpg"}, {"name": "SS Master Cricket Shoes", "brand": "SS Cricket", "cat": "Shoes", "price": "₹1,900", "img": "https://www.sstoncricket.com/cdn/shop/files/Master_Shoes.jpg"}, {"name": "SS Devils Wheelie Duffle Kitbag", "brand": "SS Cricket", "cat": "Kitbag", "price": "₹6,499", "img": "https://www.sstoncricket.com/cdn/shop/files/Devils_Wheelie_Duffle_Kitbag.jpg"}, {"name": "GM Hypa Original Cricket Bat", "brand": "GM", "cat": "Bat", "price": "₹39,999", "img": "https://www.provincesports.co.za/cdn/shop/products/Hypa-Bat_d51f8209-3545-475e-91c3-3bd65bb1be9f_1024x.png?v=1669207090"}, {"name": "GM Diamond Cricket Ball", "brand": "GM", "cat": "Ball", "price": "₹1,199", "img": "https://images.unsplash.com/photo-1629285483764-34656f76030e?w=900"}, {"name": "GM Diamond Batting Pads", "brand": "GM", "cat": "Pads", "price": "₹9,999", "img": "https://cricketdirect.co.uk/cdn/shop/files/Gunn-Moore-GM-Diamond-Batting-Pads.jpg"}, {"name": "GM Diamond Batting Gloves", "brand": "GM", "cat": "Gloves", "price": "₹7,999", "img": "https://cricketdirect.co.uk/cdn/shop/files/Gunn-Moore-GM-Diamond-Cricket-Batting-Gloves.jpg"}, {"name": "GM Purist Geo II Cricket Helmet", "brand": "GM", "cat": "Helmet", "price": "₹8,999", "img": "https://www.prodirectsport.com/cdn/shop/files/214607_main.jpg?v=1774354904"}, {"name": "GM Aion Spike Cricket Shoes", "brand": "GM", "cat": "Shoes", "price": "₹8,999", "img": "https://d2j6dbq0eux0bg.cloudfront.net/images/12175098/5347104201.jpg"}, {"name": "GM Original Duffle Cricket Kit Bag", "brand": "GM", "cat": "Kitbag", "price": "₹7,999", "img": "https://www.allroundercricket.com/media/catalog/product/cache/16882fc9de905805ba934b71051d18ad/4/0/4081_aion_original_duffle_3.jpg"}, {"name": "SG Thunder Striker English Willow Bat", "brand": "SG Cricket", "cat": "Bat", "price": "₹18,999", "img": "https://shop.teamsg.in/cdn/shop/files/SG-Thunder-Striker-English-Willow-Cricket-Bat.jpg"}, {"name": "SG Shield 30 White Cricket Leather Ball", "brand": "SG Cricket", "cat": "Ball", "price": "₹899", "img": "https://shop.teamsg.in/cdn/shop/files/SG-Shield-30-White-Cricket-Leather-Ball.jpg"}, {"name": "SG Test White Batting Legguard Pads", "brand": "SG Cricket", "cat": "Pads", "price": "₹5,999", "img": "https://shop.teamsg.in/cdn/shop/files/SG-Test-White-Batting-Legguard.jpg"}, {"name": "SG HP 33 Batting Gloves", "brand": "SG Cricket", "cat": "Gloves", "price": "₹3,999", "img": "https://shop.teamsg.in/cdn/shop/files/SG-HP-33-Batting-gloves.jpg"}, {"name": "SG Pro Shield Cricket Helmet", "brand": "SG Cricket", "cat": "Helmet", "price": "₹4,999", "img": "https://shop.teamsg.in/cdn/shop/files/SG-Pro-Shield-Cricket-Helmet.jpg"}, {"name": "SG EASE Cricket Shoes", "brand": "SG Cricket", "cat": "Shoes", "price": "₹3,999", "img": "https://shop.teamsg.in/cdn/shop/files/SG-EASE-Shoes-White-Orange.jpg"}, {"name": "SG Thunder Pro Kit Bag", "brand": "SG Cricket", "cat": "Kitbag", "price": "₹5,999", "img": "https://shop.teamsg.in/cdn/shop/files/SG-Thunder-Pro-Kit-Bag.jpg"}, {"name": "MRF Genius 360 English Willow Cricket Bat", "brand": "MRF", "cat": "Bat", "price": "₹30,599", "img": "https://scssports.in/cdn/shop/files/2_dfd0db40-6ea1-4e87-ac52-cc27f9bd34bb.png?v=1734439684&width=1200"}, {"name": "MRF Legend VK 18 1.0 Batting Pads", "brand": "MRF", "cat": "Pads", "price": "₹7,499", "img": "https://kbsportshub.ie/cdn/shop/files/Untitled-1_d7a49d6d-7e0b-4d03-a107-6c00f6213033.png?v=1690928695&width=1065"}, {"name": "MRF Genius Emperor Batting Gloves", "brand": "MRF", "cat": "Gloves", "price": "₹5,150", "img": "https://milestonecricket.co.za/cdn/shop/files/MRF-GOLD-2-1.png?v=1766576483&width=800"}, {"name": "SS TON Heritage English Willow Cricket Bat", "brand": "SS Cricket", "cat": "Bat", "price": "₹12,999", "img": "https://www.shoppersbd.com/media/catalog/product/cache/1/image/9df78eab33525d08d6e5fb8d27136e95/s/s/ss-haritage-bat.jpg"}, {"name": "SS Ranji Lite Batting Pads", "brand": "SS Cricket", "cat": "Pads", "price": "₹3,999", "img": "https://www.xfitness.ae/cdn/shop/files/SS_CRICKET_BATTING_LEG_GUARD_RANJI_LITE_SAREEN_SPORTS.png?v=1748241275&width=533"}, {"name": "SS Super Test Batting Gloves", "brand": "SS Cricket", "cat": "Gloves", "price": "₹4,210", "img": "https://static.joonsite.com/storage/72857/media/2507211557047913.jpg"}, {"name": "SS Ranger Cricket Kit Bag", "brand": "SS Cricket", "cat": "Kitbag", "price": "₹2,999", "img": "https://prokicksports.com/cdn/shop/files/SSRangerKitBag2.jpg?v=1689163508&width=1946"}, {"name": "SG Scorer Plus Kashmir Willow Cricket Bat", "brand": "SG Cricket", "cat": "Bat", "price": "₹4,999", "img": "https://www.sportswing.in/cdn/shop/files/SGPremiumKashmirWillowCricketComboKit_8_cfc7fbcc-0873-49e5-b20a-66247579f9a9.jpg?v=1774591473&width=1090"}, {"name": "SG Test Batting Legguards", "brand": "SG Cricket", "cat": "Pads", "price": "₹4,999", "img": "https://www.lrsports.in/cdn/shop/files/Untitled_design_453123c4-2b4e-44a5-b679-e58fc4c44f38.png?v=1771410474"}, {"name": "SG Test Batting Gloves", "brand": "SG Cricket", "cat": "Gloves", "price": "₹3,999", "img": "https://skiyasports.com/cdn/shop/files/Untitled_design_c896cfe9-442e-47c6-a90c-6031bb0d6f33.png?v=1752154890"}, {"name": "SG Smart Cricket Helmet", "brand": "SG Cricket", "cat": "Helmet", "price": "₹3,999", "img": "https://prokicksports.com/cdn/shop/files/Smart3.jpg?v=1719898116&width=1946"}, {"name": "SG ACE DUFFLE Cricket Kit Bag", "brand": "SG Cricket", "cat": "Kitbag", "price": "₹3,499", "img": "https://shop.teamsg.in/cdn/shop/products/15_4-copy-2-scaled.jpg?v=1696575028"}, {"name": "GM Diamond Striker Kashmir Willow Cricket Bat", "brand": "GM", "cat": "Bat", "price": "₹7,999", "img": "https://www.silkrute.com.au/images/detailed/4293/71xR-zRUigL_xh9i-z1.jpg"}, {"name": "GM Prima 606 Cricket Batting Gloves", "brand": "GM", "cat": "Gloves", "price": "₹5,999", "img": "https://cricketershop.com/cdn/shop/files/gm-batting-gloves-right-handed-batsman-adult-gunn-moore-gm-prima-606-cricket-batting-gloves-mens-size-39041564442804.jpg?v=1745776424"}, {"name": "GM Prima Ambidextrous Cricket Pads", "brand": "GM", "cat": "Pads", "price": "₹7,999", "img": "https://www.cricket-hockey.com/52239/gm-prima-ambidextrous-cricket-pads-2023.jpg"}, {"name": "GM Maestro Ti Cricket Helmet", "brand": "GM", "cat": "Helmet", "price": "₹9,999", "img": "https://cricketerpoint.com/cdn/shop/files/2000x2000_Maestro_blue_SIDE_700x_f40641e7-97d7-4b1a-9b82-6ed78db6a8d3.webp?v=1762943315&width=1024"}, {"name": "GM Original Spike Cricket Shoes", "brand": "GM", "cat": "Shoes", "price": "₹8,999", "img": "https://www.stagsports.com.au/cdn/shop/files/5_4c54dc43-8722-47d2-804e-8daa7b97a160.jpg?crop=center&height=1000&v=1719982469&width=1000"}, {"name": "Gray-Nicolls Classic Players Edition Batting Pads", "brand": "Gray-Nicolls", "cat": "Pads", "price": "₹18,999", "img": "https://www.gray-nicolls.co.uk/cdn/shop/files/CLAA25Legguards_20Classic_20Players_20Batting_20Pad_20Pair.jpg?v=1727177856"}, {"name": "Gray-Nicolls 1200 Batting Gloves", "brand": "Gray-Nicolls", "cat": "Gloves", "price": "₹9,999", "img": "https://sjsports.com.au/cdn/shop/files/30059.jpg?v=1756814899"}, {"name": "Gray-Nicolls Evo Pro Cricket Helmet", "brand": "Gray-Nicolls", "cat": "Helmet", "price": "₹10,999", "img": "https://cricketdirect.co.uk/cdn/shop/files/5509605EvoProHelmetNavy_FrontRight_grande.jpg?v=1736956996"}, {"name": "Gray-Nicolls Grade A Cricket Ball", "brand": "Gray-Nicolls", "cat": "Ball", "price": "₹1,899", "img": "https://batbroscricket.co.uk/cdn/shop/files/gray-nicolls-crest-elite-cricket-ball-front.webp?v=1773066392&width=533"}, {"name": "Gray-Nicolls GN9 International Cricket Kit Bag", "brand": "Gray-Nicolls", "cat": "Kitbag", "price": "₹8,999", "img": "https://wizsports.com.au/cdn/shop/files/gray-nicolls-duffle-gn9-international-cricket-kit-bag-wheelie-cricket-kit-bag-980844_1200x1200.jpg?v=1750636793"}];
+let cart=0, activeBrand='All', activeCat='All';
+const brands=['All',...new Set(products.map(p=>p.brand))];
+const cats=['All','Bat','Ball','Pads','Gloves','Helmet','Shoes','Kitbag'];
+const filters=document.getElementById('filters');
+function makeButtons(items,type){
+ items.forEach(x=>{const b=document.createElement('button');b.textContent=x;b.className=(x==='All'?'on':'');b.onclick=()=>{[...filters.querySelectorAll(type==='brand'?'.brandf':'.catf')].forEach(y=>y.classList.remove('on'));b.classList.add('on');if(type==='brand')activeBrand=x;else activeCat=x;render()};b.classList.add(type==='brand'?'brandf':'catf');filters.appendChild(b)})
+}
+makeButtons(brands,'brand'); makeButtons(cats,'cat');
+function render(){
+  const q=document.getElementById('search').value.toLowerCase();
+  document.querySelectorAll('.card').forEach((el,i)=>{
+    const p=products[i];
+    const ok=p&&(activeBrand==='All'||p.brand===activeBrand)&&(activeCat==='All'||p.cat===activeCat)&&(!q||p.name.toLowerCase().includes(q)||p.brand.toLowerCase().includes(q)||p.cat.toLowerCase().includes(q));
+    el.style.display=ok?'flex':'none';
+  });
+}
+function addToCart(i){cart++;document.getElementById('count').textContent=cart}
+let slide=0;
+function renderDots(){
+  const d=document.getElementById('dots'); if(!d)return;
+  d.innerHTML=[...document.querySelectorAll('.slide')].map((_,i)=>`<button class="${i===slide?'active':''}" onclick="goSlide(${i})" aria-label="Slide ${i+1}"></button>`).join('');
+}
+function goSlide(i){
+  const ss=document.querySelectorAll('.slide'); if(!ss.length)return;
+  ss[slide].classList.remove('active'); slide=(i+ss.length)%ss.length; ss[slide].classList.add('active'); renderDots();
+}
+function moveSlide(dir){goSlide(slide+dir)}
+renderDots();
+setInterval(()=>moveSlide(1),4500);
+</script></body></html>
